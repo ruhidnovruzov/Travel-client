@@ -5,7 +5,6 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
     const token = localStorage.getItem('token');
-    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       headers: {
         'Content-Type': 'application/json',
@@ -40,6 +39,13 @@ class ApiService {
     return this.request(`/users/${id}/role`, {
       method: 'PUT',
       body: JSON.stringify({ role }),
+    });
+  }
+
+  async createUser(user: Partial<User>): Promise<ApiResponse<User>> {
+    return this.request('/users', {
+      method: 'POST',
+      body: JSON.stringify(user),
     });
   }
 

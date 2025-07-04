@@ -10,6 +10,19 @@ const FlightsPage: React.FC = () => {
   const [selectedFlight, setSelectedFlight] = useState<Flight | undefined>();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    airline: '',
+    flightNumber: '',
+    origin: '',
+    destination: '',
+    departureTime: '',
+    arrivalTime: '',
+    price: '',
+    totalSeats: '',
+    availableSeats: '',
+    stops: '',
+    status: 'scheduled',
+  });
 
   useEffect(() => {
     fetchFlights();
@@ -65,11 +78,37 @@ const FlightsPage: React.FC = () => {
 
   const handleAdd = () => {
     setSelectedFlight(undefined);
+    setFormData({
+      airline: '',
+      flightNumber: '',
+      origin: '',
+      destination: '',
+      departureTime: '',
+      arrivalTime: '',
+      price: '',
+      totalSeats: '',
+      availableSeats: '',
+      stops: '',
+      status: 'scheduled',
+    });
     setShowModal(true);
   };
 
   const handleEdit = (flight: Flight) => {
     setSelectedFlight(flight);
+    setFormData({
+      airline: flight.airline,
+      flightNumber: flight.flightNumber,
+      origin: flight.origin,
+      destination: flight.destination,
+      departureTime: flight.departureTime ? new Date(flight.departureTime).toISOString().slice(0, 16) : '',
+      arrivalTime: flight.arrivalTime ? new Date(flight.arrivalTime).toISOString().slice(0, 16) : '',
+      price: flight.price?.toString() || '',
+      totalSeats: flight.totalSeats?.toString() || '',
+      availableSeats: flight.availableSeats?.toString() || '',
+      stops: flight.stops?.toString() || '',
+      status: flight.status || 'scheduled',
+    });
     setShowModal(true);
   };
 
@@ -77,21 +116,40 @@ const FlightsPage: React.FC = () => {
     if (window.confirm('Are you sure you want to delete this flight?')) {
       try {
         await apiService.deleteFlight(flight._id);
-        await fetchFlights(); // Refresh the list
+        await fetchFlights();
       } catch (err) {
         alert(err instanceof Error ? err.message : 'Failed to delete flight');
       }
     }
   };
 
-  const handleFormSubmit = async (data: Partial<Flight>) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
+      const data = {
+        airline: formData.airline,
+        flightNumber: formData.flightNumber,
+        origin: formData.origin,
+        destination: formData.destination,
+        departureTime: formData.departureTime ? new Date(formData.departureTime).toISOString() : '',
+        arrivalTime: formData.arrivalTime ? new Date(formData.arrivalTime).toISOString() : '',
+        price: Number(formData.price),
+        totalSeats: Number(formData.totalSeats),
+        availableSeats: formData.availableSeats ? Number(formData.availableSeats) : Number(formData.totalSeats),
+        stops: formData.stops ? Number(formData.stops) : 0,
+        status: formData.status,
+      };
       if (selectedFlight) {
         await apiService.updateFlight(selectedFlight._id, data);
       } else {
         await apiService.createFlight(data);
       }
-      await fetchFlights(); // Refresh the list
+      await fetchFlights();
       setShowModal(false);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to save flight');
@@ -102,7 +160,7 @@ const FlightsPage: React.FC = () => {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">Error: {error}</p>
-        <button 
+        <button
           onClick={fetchFlights}
           className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
         >
@@ -131,9 +189,161 @@ const FlightsPage: React.FC = () => {
         title={selectedFlight ? 'Edit Flight' : 'Add New Flight'}
         size="lg"
       >
-        <div className="p-4 text-center text-slate-500">
-          Flight form component will be implemented here
-        </div>
+        <form onSubmit={handleFormSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Airline</label>
+              <input
+                type="text"
+                name="airline"
+                value={formData.airline}
+                onChange={handleFormChange}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Flight Number</label>
+              <input
+                type="text"
+                name="flightNumber"
+                value={formData.flightNumber}
+                onChange={handleFormChange}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">From (Origin)</label>
+              <input
+                type="text"
+                name="origin"
+                value={formData.origin}
+                onChange={handleFormChange}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">To (Destination)</label>
+              <input
+                type="text"
+                name="destination"
+                value={formData.destination}
+                onChange={handleFormChange}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Departure Time</label>
+              <input
+                type="datetime-local"
+                name="departureTime"
+                value={formData.departureTime}
+                onChange={handleFormChange}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Arrival Time</label>
+              <input
+                type="datetime-local"
+                name="arrivalTime"
+                value={formData.arrivalTime}
+                onChange={handleFormChange}
+                required
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Price</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.price}
+                onChange={handleFormChange}
+                required
+                min={0}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Total Seats</label>
+              <input
+                type="number"
+                name="totalSeats"
+                value={formData.totalSeats}
+                onChange={handleFormChange}
+                required
+                min={1}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Available Seats</label>
+              <input
+                type="number"
+                name="availableSeats"
+                value={formData.availableSeats}
+                onChange={handleFormChange}
+                min={0}
+                max={formData.totalSeats ? Number(formData.totalSeats) : undefined}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="Default: all"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Stops</label>
+              <input
+                type="number"
+                name="stops"
+                value={formData.stops}
+                onChange={handleFormChange}
+                min={0}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                placeholder="0"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Status</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleFormChange}
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="scheduled">Scheduled</option>
+                <option value="delayed">Delayed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4">
+            <button
+              type="button"
+              onClick={() => setShowModal(false)}
+              className="px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              {selectedFlight ? 'Update' : 'Create'} Flight
+            </button>
+          </div>
+        </form>
       </Modal>
     </div>
   );
