@@ -1,11 +1,11 @@
 import React, { useContext, useState, useEffect } from 'react';
-import { 
-  Plane, 
-  Hotel, 
-  Car, 
-  Shield, 
-  Zap, 
-  DollarSign, 
+import {
+  Plane,
+  Hotel,
+  Car,
+  Shield,
+  Zap,
+  DollarSign,
   Headphones,
   ArrowRight,
   MapPin,
@@ -25,7 +25,7 @@ const Link = ({ to, children, className, ...props }) => (
 );
 
 const HomePage = () => {
-  const {user,  loading } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   console.log('User from context:', user);
   const [stats, setStats] = useState({
     totalFlights: 0,
@@ -42,11 +42,11 @@ const HomePage = () => {
       try {
         // Bu API endpointlərinizi əlavə etdikdən sonra aktiv edin
         const [flightsRes, hotelsRes, carsRes] = await Promise.all([
-          fetch('http://localhost:5000/api/flights'),
-          fetch('http://localhost:5000/api/hotels'),
-          fetch('http://localhost:5000/api/cars')
+          fetch('https://travel-back-5euo.onrender.com/api/flights'),
+          fetch('https://travel-back-5euo.onrender.com/api/hotels'),
+          fetch('https://travel-back-5euo.onrender.com/api/cars')
         ]);
-        
+
         const flightsData = await flightsRes.json();
         const hotelsData = await hotelsRes.json();
         const carsData = await carsRes.json();
@@ -81,40 +81,40 @@ const HomePage = () => {
     fetchStats();
   }, []);
 
-const services = [
-  {
-    title: 'Uçuş Rezervasyonu',
-    description: 'Dünyanın hər yerinə ən münasib qiymətlərlə uçuş biletləri',
-    icon: Plane,
-    link: '/flights',
-    color: 'from-blue-500 to-blue-600',
-    count: stats.totalFlights
-  },
-  {
-    title: 'Hotel Rezervasyonu',
-    description: 'Keyfiyyətli hotellər və ən yaxşı qiymətlər',
-    icon: Hotel,
-    link: '/hotels',
-    color: 'from-emerald-500 to-emerald-600',
-    count: stats.totalHotels
-  },
-  {
-    title: 'Avtomobil İcarəsi',
-    description: 'Səyahət üçün uyğun və təhlükəsiz avtomobillər',
-    icon: Car,
-    link: '/cars',
-    color: 'from-purple-500 to-purple-600',
-    count: stats.totalCars
-  },
-  {
-    title: 'Tur Paketləri',
-    description: 'Ən maraqlı və sərfəli turlar, qrup və fərdi seçimlər',
-    icon: MapPin,
-    link: '/tours',
-    color: 'from-pink-500 to-orange-500',
-    count: stats.totalTours || 0 // stats.totalTours varsa istifadə et, yoxdursa 0 göstər
-  }
-];
+  const services = [
+    {
+      title: 'Uçuş Rezervasyonu',
+      description: 'Dünyanın hər yerinə ən münasib qiymətlərlə uçuş biletləri',
+      icon: Plane,
+      link: '/flights',
+      color: 'from-blue-500 to-blue-600',
+      count: stats.totalFlights
+    },
+    {
+      title: 'Hotel Rezervasyonu',
+      description: 'Keyfiyyətli hotellər və ən yaxşı qiymətlər',
+      icon: Hotel,
+      link: '/hotels',
+      color: 'from-emerald-500 to-emerald-600',
+      count: stats.totalHotels
+    },
+    {
+      title: 'Avtomobil İcarəsi',
+      description: 'Səyahət üçün uyğun və təhlükəsiz avtomobillər',
+      icon: Car,
+      link: '/cars',
+      color: 'from-purple-500 to-purple-600',
+      count: stats.totalCars
+    },
+    {
+      title: 'Tur Paketləri',
+      description: 'Ən maraqlı və sərfəli turlar, qrup və fərdi seçimlər',
+      icon: MapPin,
+      link: '/tours',
+      color: 'from-pink-500 to-orange-500',
+      count: stats.totalTours || 0 // stats.totalTours varsa istifadə et, yoxdursa 0 göstər
+    }
+  ];
   const features = [
     {
       icon: Shield,
@@ -171,21 +171,21 @@ const services = [
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: 'url("https://images.pexels.com/photos/1371360/pexels-photo-1371360.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop")'
           }}
         />
-        
+
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-black/70" />
-        
+
         {/* Floating Elements */}
         <div className="absolute top-20 left-10 w-16 h-16 bg-white/10 rounded-full blur-sm animate-pulse" />
         <div className="absolute top-32 right-20 w-24 h-24 bg-blue-500/20 rounded-full blur-sm animate-pulse delay-700" />
         <div className="absolute bottom-32 left-20 w-20 h-20 bg-purple-500/20 rounded-full blur-sm animate-pulse delay-500" />
-        
+
         {/* Content */}
         <div className="relative z-10 text-center text-white max-w-5xl mx-auto px-6">
           <div className="mb-8">
@@ -199,7 +199,7 @@ const services = [
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-12 max-w-3xl mx-auto font-light leading-relaxed">
-              Uçuş, hotel və avtomobil rezervasyonu üçün ən etibarlı platformaya xoş gəlmisiniz. 
+              Uçuş, hotel və avtomobil rezervasyonu üçün ən etibarlı platformaya xoş gəlmisiniz.
               Dünyada hər yerə səyahət edin, xatirələrinizi yaradın.
             </p>
           </div>
@@ -223,15 +223,15 @@ const services = [
             </div>
           ) : (
             <div className="space-y-4 sm:space-y-0 sm:space-x-6 sm:flex sm:justify-center">
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl hover:from-blue-700 hover:to-purple-700 transform hover:-translate-y-1 transition-all duration-300 shadow-xl hover:shadow-2xl"
               >
                 <span className="relative z-10">Daxil Ol</span>
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link 
-                to="/register" 
+              <Link
+                to="/register"
                 className="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-semibold text-white border-2 border-white/30 rounded-2xl hover:bg-white hover:text-gray-900 transform hover:-translate-y-1 transition-all duration-300 backdrop-blur-sm"
               >
                 <span className="relative z-10">Qeydiyyat</span>
@@ -253,7 +253,7 @@ const services = [
               Səyahətiniz üçün lazım olan hər şey bir yerdə
             </p>
           </div>
-          
+
           <div className="grid sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-6">
             {services.map((service, index) => {
               const IconComponent = service.icon;
@@ -261,21 +261,21 @@ const services = [
                 <div key={index} className="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2">
                   {/* Gradient Background */}
                   <div className={`absolute inset-0 bg-gradient-to-br ${service.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`} />
-                  
+
                   {/* Icon Section */}
                   <div className="relative p-8">
                     <div className={`w-16 h-16 bg-gradient-to-br ${service.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
-                    
+
                     <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-gray-700 transition-colors">
                       {service.title}
                     </h3>
-                    
+
                     <p className="text-gray-600 mb-6 leading-relaxed">
                       {service.description}
                     </p>
-                    
+
                     {!stats.loading && (
                       <div className="flex items-center mb-6">
                         <TrendingUp className="w-5 h-5 text-green-500 mr-2" />
@@ -284,8 +284,8 @@ const services = [
                         </span>
                       </div>
                     )}
-                    
-                    <Link 
+
+                    <Link
                       to={service.link}
                       className={`group/btn inline-flex items-center justify-center w-full py-4 px-6 bg-gradient-to-r ${service.color} text-white font-semibold rounded-xl hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-300`}
                     >
@@ -311,7 +311,7 @@ const services = [
               Müştərilərimizin təhlükəsizliyi və məmnuniyyəti bizim prioritetimizdir
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {features.map((feature, index) => {
               const IconComponent = feature.icon;
@@ -346,15 +346,15 @@ const services = [
                 Bir kliklə istədiyiniz xidməti tapın
               </p>
             </div>
-            
+
             <div className="max-w-6xl mx-auto">
               <div className="grid md:grid-cols-3 gap-8">
                 {quickSearchOptions.map((option, index) => {
                   const IconComponent = option.icon;
                   return (
-                    <Link 
+                    <Link
                       key={index}
-                      to={option.link} 
+                      to={option.link}
                       className="group relative bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 hover:bg-white/20 transform hover:-translate-y-2 transition-all duration-300"
                     >
                       <div className={`w-16 h-16 bg-gradient-to-br ${option.color} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>

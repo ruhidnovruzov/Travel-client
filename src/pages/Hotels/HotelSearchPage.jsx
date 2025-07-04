@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { 
-  Search, 
-  MapPin, 
-  Calendar, 
-  Users, 
-  Bed, 
+import {
+  Search,
+  MapPin,
+  Calendar,
+  Users,
+  Bed,
   ArrowRight,
   Sparkles,
   Clock,
@@ -25,12 +25,12 @@ const HotelSearchPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-    const [cityOptions, setCityOptions] = useState([]);
+  const [cityOptions, setCityOptions] = useState([]);
 
-     useEffect(() => {
+  useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/hotels');
+        const res = await axios.get('https://travel-back-5euo.onrender.com/api/hotels');
         const cities = res.data.data.map(h => h.city).filter(Boolean);
         setCityOptions(Array.from(new Set(cities)));
       } catch (err) {
@@ -63,7 +63,7 @@ const HotelSearchPage = () => {
       try {
         const params = {};
         if (debouncedCity) params.city = debouncedCity;
-        const res = await axios.get('http://localhost:5000/api/hotels', { params });
+        const res = await axios.get('https://travel-back-5euo.onrender.com/api/hotels', { params });
         setHotels(res.data.data || []);
       } catch (err) {
         setError('Hotellər yüklənmədi.');
@@ -93,21 +93,21 @@ const HotelSearchPage = () => {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Background Image */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: 'url("https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&fit=crop")'
           }}
         />
-        
+
         {/* Overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/40 to-black/60" />
-        
+
         {/* Floating Elements */}
         <div className="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full blur-sm animate-pulse" />
         <div className="absolute top-32 right-20 w-16 h-16 bg-blue-500/20 rounded-full blur-sm animate-pulse delay-700" />
         <div className="absolute bottom-32 left-20 w-24 h-24 bg-purple-500/20 rounded-full blur-sm animate-pulse delay-500" />
-        
+
         {/* Content */}
         <div className="relative z-10 w-full max-w-6xl mx-auto px-6">
           <div className="text-center text-white mb-12">
@@ -121,7 +121,7 @@ const HotelSearchPage = () => {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-gray-200 mb-8 max-w-3xl mx-auto font-light leading-relaxed">
-              Dünyanın ən yaxşı hotellərində unudulmaz təcrübələr yaşayın. 
+              Dünyanın ən yaxşı hotellərində unudulmaz təcrübələr yaşayın.
               Komfort və lüks bir arada.
             </p>
           </div>
@@ -137,7 +137,7 @@ const HotelSearchPage = () => {
                     Şəhər və ya Hotel
                   </label>
                   <div className="relative">
-                                       <select
+                    <select
                       className="w-full px-4 py-4 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-lg"
                       value={city}
                       onChange={(e) => setCity(e.target.value)}
@@ -231,92 +231,92 @@ const HotelSearchPage = () => {
       </section>
 
       {/* Hotellər Listi */}
-<section className="py-16 bg-gray-50">
-  <div className=" mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex flex-col md:flex-row justify-between items-center mb-10">
-      <h2 className="text-4xl font-extrabold text-gray-900 mb-4 md:mb-0">Hotellər</h2>
-      <div className="flex items-center space-x-4">
-  
-      </div>
-    </div>
+      <section className="py-16 bg-gray-50">
+        <div className=" mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+            <h2 className="text-4xl font-extrabold text-gray-900 mb-4 md:mb-0">Hotellər</h2>
+            <div className="flex items-center space-x-4">
 
-    {/* Otellər Gridi */}
-    {loading ? (
-      <div className="text-center py-12">
-        <div className="inline-block w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="mt-4 text-lg text-blue-600">Yüklənir...</p>
-      </div>
-    ) : error ? (
-      <div className="text-center py-12">
-        <p className="text-red-500 text-lg">{error}</p>
-      </div>
-    ) : hotels.length === 0 ? (
-      <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">Hotel tapılmadı.</p>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {hotels.map((hotel) => (
-          <div
-            key={hotel._id}
-            className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-gray-200"
-          >
-            {/* Hotel Şəkli */}
-            <div className="relative">
-              {hotel.images && hotel.images.length > 0 ? (
-                <img
-                  src={hotel.images[0]}
-                  alt={hotel.name}
-                  className="w-full h-48 object-cover"
-                />
-              ) : (
-                <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500">Şəkil yoxdur</span>
-                </div>
-              )}
-              <div className="absolute top-3 right-3 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                {hotel.stars} ★
-              </div>
-            </div>
-
-            {/* Məzmun */}
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{hotel.name}</h3>
-              <p className="text-sm text-gray-600 mb-4 truncate">
-                {hotel.address}, {hotel.city}, {hotel.country}
-              </p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {hotel.amenities && hotel.amenities.length > 0 ? (
-                  hotel.amenities.slice(0, 3).map((amenity, index) => (
-                    <span
-                      key={index}
-                      className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full"
-                    >
-                      {amenity}
-                    </span>
-                  ))
-                ) : (
-                  <span className="text-xs text-gray-500">Xidmətlər mövcud deyil</span>
-                )}
-              </div>
-              <div className="flex justify-between items-center mt-4">
-                <p className="text-lg font-semibold text-gray-900">
-                  {hotel.cheapestPrice} ₼ / gecə
-                </p>
-                <Link
-                  to={`/hotels/${hotel._id}`}
-                  className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 transition"
-                >
-                  Ətraflı bax
-                </Link>
-              </div>
             </div>
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-</section>
+
+          {/* Otellər Gridi */}
+          {loading ? (
+            <div className="text-center py-12">
+              <div className="inline-block w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="mt-4 text-lg text-blue-600">Yüklənir...</p>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 text-lg">{error}</p>
+            </div>
+          ) : hotels.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Hotel tapılmadı.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {hotels.map((hotel) => (
+                <div
+                  key={hotel._id}
+                  className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden transform hover:-translate-y-1 border border-gray-200"
+                >
+                  {/* Hotel Şəkli */}
+                  <div className="relative">
+                    {hotel.images && hotel.images.length > 0 ? (
+                      <img
+                        src={hotel.images[0]}
+                        alt={hotel.name}
+                        className="w-full h-48 object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                        <span className="text-gray-500">Şəkil yoxdur</span>
+                      </div>
+                    )}
+                    <div className="absolute top-3 right-3 bg-purple-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
+                      {hotel.stars} ★
+                    </div>
+                  </div>
+
+                  {/* Məzmun */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-2">{hotel.name}</h3>
+                    <p className="text-sm text-gray-600 mb-4 truncate">
+                      {hotel.address}, {hotel.city}, {hotel.country}
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {hotel.amenities && hotel.amenities.length > 0 ? (
+                        hotel.amenities.slice(0, 3).map((amenity, index) => (
+                          <span
+                            key={index}
+                            className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded-full"
+                          >
+                            {amenity}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-xs text-gray-500">Xidmətlər mövcud deyil</span>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center mt-4">
+                      <p className="text-lg font-semibold text-gray-900">
+                        {hotel.cheapestPrice} ₼ / gecə
+                      </p>
+                      <Link
+                        to={`/hotels/${hotel._id}`}
+                        className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-indigo-700 transition"
+                      >
+                        Ətraflı bax
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Popular Destinations */}
       <section className="py-24 bg-white">
@@ -329,11 +329,11 @@ const HotelSearchPage = () => {
               Ən çox seçilən şəhərlərdə ən yaxşı hotelləri kəşf edin
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {popularDestinations.map((destination, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className="group relative bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden transform hover:-translate-y-2 cursor-pointer"
                 onClick={() => setCity(destination.name)}
               >
@@ -371,13 +371,13 @@ const HotelSearchPage = () => {
               Xüsusi ehtiyaclarınıza uyğun hotelləri tapın
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {quickFilters.map((filter, index) => {
               const IconComponent = filter.icon;
               return (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="group bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 text-center cursor-pointer transform hover:-translate-y-1"
                 >
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">

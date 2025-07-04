@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: 'https://travel-back-5euo.onrender.com/api',
     withCredentials: true,
 });
 

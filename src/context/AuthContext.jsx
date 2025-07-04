@@ -87,7 +87,7 @@ export const AuthProvider = ({ children }) => {
 
     // Axios instansiyasını yarat və çərəzlərin göndərilməsini təmin et
     const API = axios.create({
-        baseURL: 'http://localhost:5000/api', // Backend API-nizin əsas URL-i
+        baseURL: 'https://travel-back-5euo.onrender.com/api', // Backend API-nizin əsas URL-i
         withCredentials: true, // Çərəzləri avtomatik göndər və qəbul et
     });
 

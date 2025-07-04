@@ -19,7 +19,7 @@ const FlightSearchPage = () => {
     useEffect(() => {
         const fetchAllFlights = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/flights');
+                const res = await fetch('https://travel-back-5euo.onrender.com/api/flights');
                 const data = await res.json();
                 if (data.success) {
                     setAllFlights(data.data);
@@ -47,7 +47,7 @@ const FlightSearchPage = () => {
                 destination,
                 departureDate,
             });
-            const res = await fetch(`http://localhost:5000/api/flights?${params.toString()}`);
+            const res = await fetch(`https://travel-back-5euo.onrender.com/api/flights?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 setFlights(data.data);
@@ -113,7 +113,7 @@ const FlightSearchPage = () => {
                         Xoş Gəlmisiniz
                     </h1>
                     <p className="text-xl text-white/80 max-w-2xl mx-auto">
-                        Uçuş, hotel və avtomobil rezervasyonu üçün ən etibarlı platformaya xoş gəlmisiniz. 
+                        Uçuş, hotel və avtomobil rezervasyonu üçün ən etibarlı platformaya xoş gəlmisiniz.
                         Dünyada hər yerə səyahət edin, xatirələrinizi yaradın.
                     </p>
                 </div>
@@ -189,7 +189,7 @@ const FlightSearchPage = () => {
                                         value={passengers}
                                         onChange={(e) => setPassengers(e.target.value)}
                                     >
-                                        {[1,2,3,4,5,6,7,8].map(num => (
+                                        {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
                                             <option key={num} value={num} className="bg-gray-800 text-white">
                                                 {num} Sərnişin
                                             </option>
@@ -257,7 +257,7 @@ const FlightSearchPage = () => {
                     <h2 className="text-3xl font-bold text-white text-center mb-12">Populyar Təyinatlara</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {popularDestinations.map((dest, index) => (
-                            <div 
+                            <div
                                 key={index}
                                 className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300 cursor-pointer group hover:scale-105"
                             >

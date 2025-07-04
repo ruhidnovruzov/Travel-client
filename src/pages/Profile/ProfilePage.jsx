@@ -44,7 +44,7 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(
-                'http://localhost:5000/api/users/profile',
+                'https://travel-back-5euo.onrender.com/api/users/profile',
                 {
                     name: form.name,
                     email: form.email,
@@ -102,18 +102,18 @@ const ProfilePage = () => {
                                             {user.name.charAt(0).toUpperCase()}
                                         </div>
                                     </div>
-                                    
+
                                     <div className="space-y-4">
                                         <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                                             <label className="block text-purple-200 text-sm font-medium mb-1">Ad</label>
                                             <p className="text-white text-lg font-semibold">{user.name}</p>
                                         </div>
-                                        
+
                                         <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                                             <label className="block text-purple-200 text-sm font-medium mb-1">Email</label>
                                             <p className="text-white text-lg font-semibold">{user.email}</p>
                                         </div>
-                                        
+
                                         <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                                             <label className="block text-purple-200 text-sm font-medium mb-1">Rol</label>
                                             <p className="text-white text-lg font-semibold capitalize">{user.role}</p>
@@ -149,7 +149,7 @@ const ProfilePage = () => {
                                                 required
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-purple-200 text-sm font-medium mb-2">Email</label>
                                             <input
@@ -161,7 +161,7 @@ const ProfilePage = () => {
                                                 required
                                             />
                                         </div>
-                                        
+
                                         <div>
                                             <label className="block text-purple-200 text-sm font-medium mb-2">Yeni Şifrə (istəyə bağlı)</label>
                                             <input
