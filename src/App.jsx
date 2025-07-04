@@ -21,7 +21,7 @@ import CarListPage from './pages/Cars/CarListPage.jsx';
 import AboutPage from './pages/About/AboutPage.jsx';
 import ContactPage from './pages/Contact/ContactPage.jsx';
 import Footer from './components/common/Footer.jsx';
-
+import AdminPanel from './pages/Admin/AdminPanel.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 
 
@@ -36,6 +36,10 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile" element={<ProfilePage />} />
+
+          {/* Admin Paneli */}
+          <Route path="/admin" element={<AdminPanel />} />
+          
 
           {/* Uçuş Marşrutları */}
           <Route path="/flights" element={<FlightSearchPage />} />
