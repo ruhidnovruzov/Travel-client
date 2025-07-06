@@ -58,25 +58,30 @@ const Navbar = () => {
     ];
 
     return (
-        <nav className={`fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${isScrolled
-                ? 'bg-white/90 backdrop-blur-lg shadow-2xl border-b border-white/20'
+        <nav className={`fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${
+            isScrolled
+                ? 'bg-white/95 backdrop-blur-xl shadow-2xl border-b border-gray-200/50'
                 : 'bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900'
-            }`}>
+        }`}>
             {/* Animated background gradient */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-gradient-x opacity-50"></div>
+            
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-16 lg:h-20">
                     {/* Logo */}
                     <div className="flex items-center space-x-3">
-                        <div className={`p-2 rounded-full transition-all duration-300 ${isScrolled ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'bg-white/20'
-                            }`}>
-                            <Plane className={`w-6 h-6 transition-colors duration-300 ${isScrolled ? 'text-white' : 'text-blue-300'
-                                }`} />
+                        <div className={`p-2 rounded-full transition-all duration-300 ${
+                            isScrolled ? 'bg-gradient-to-r from-blue-500 to-purple-600' : 'bg-white/20'
+                        }`}>
+                            <Plane className={`w-6 h-6 transition-colors duration-300 ${
+                                isScrolled ? 'text-white' : 'text-blue-300'
+                            }`} />
                         </div>
                         <Link
                             to="/"
-                            className={`text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent hover:from-blue-300 hover:to-purple-300 transition-all duration-300 ${isScrolled ? 'from-slate-800 to-purple-800' : ''
-                                }`}
+                            className={`text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent hover:from-blue-300 hover:to-purple-300 transition-all duration-300 ${
+                                isScrolled ? 'from-slate-800 to-purple-800' : ''
+                            }`}
                         >
                             TravelAZ
                         </Link>
@@ -89,21 +94,23 @@ const Navbar = () => {
                                 <div key={index} className="relative group">
                                     <button
                                         onClick={() => toggleDropdown(link.text)}
-                                        className={`px-4 py-2 flex items-center gap-1 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${isScrolled
+                                        className={`px-4 py-2 flex items-center gap-1 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${
+                                            isScrolled
                                                 ? 'text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600'
                                                 : 'text-white/90 hover:text-white hover:bg-white/20'
-                                            } backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg`}
+                                        } backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg`}
                                     >
                                         {link.text}
                                         <ChevronDown className="w-4 h-4" />
                                     </button>
-                                    <div className={`absolute left-0 mt-2 w-48 bg-white/90 backdrop-blur-md rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 ${openDropdown === link.text ? 'opacity-100 visible' : ''
-                                        }`}>
+                                    <div className={`absolute left-0 mt-2 w-48 bg-white/95 backdrop-blur-xl rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 border border-gray-200/50 ${
+                                        openDropdown === link.text ? 'opacity-100 visible' : ''
+                                    }`}>
                                         {link.subItems.map((sub, i) => (
                                             <Link
                                                 key={i}
                                                 to={sub.to}
-                                                className="block px-4 py-2 text-slate-800 hover:bg-purple-100/80 rounded-md transition"
+                                                className="block px-4 py-3 text-slate-800 hover:bg-gradient-to-r hover:from-purple-50 hover:to-blue-50 rounded-lg transition-all duration-300 hover:translate-x-1"
                                             >
                                                 {sub.text}
                                             </Link>
@@ -114,10 +121,11 @@ const Navbar = () => {
                                 <Link
                                     key={link.to}
                                     to={link.to}
-                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${isScrolled
+                                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${
+                                        isScrolled
                                             ? 'text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600'
                                             : 'text-white/90 hover:text-white hover:bg-white/20'
-                                        } backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg`}
+                                    } backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg`}
                                 >
                                     {link.text}
                                 </Link>
@@ -131,10 +139,11 @@ const Navbar = () => {
                             <div className="flex items-center space-x-3">
                                 <Link
                                     to="/profile"
-                                    className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${isScrolled
+                                    className={`flex items-center space-x-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${
+                                        isScrolled
                                             ? 'text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-blue-500'
                                             : 'text-white/90 hover:text-white hover:bg-white/20'
-                                        } backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg`}
+                                    } backdrop-blur-sm border border-transparent hover:border-white/30 hover:shadow-lg`}
                                 >
                                     <User className="w-4 h-4" />
                                     <span>Profil ({user.name})</span>
@@ -159,10 +168,11 @@ const Navbar = () => {
                             <div className="flex items-center space-x-3">
                                 <Link
                                     to="/login"
-                                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${isScrolled
+                                    className={`px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105 transform ${
+                                        isScrolled
                                             ? 'text-slate-700 border border-slate-300 hover:bg-slate-100'
                                             : 'text-white border border-white/30 hover:bg-white/10'
-                                        } hover:shadow-lg`}
+                                    } hover:shadow-lg`}
                                 >
                                     Daxil Ol
                                 </Link>
@@ -180,10 +190,11 @@ const Navbar = () => {
                     <div className="lg:hidden">
                         <button
                             onClick={toggleMobileMenu}
-                            className={`p-2 rounded-full transition-all duration-300 ${isScrolled
+                            className={`p-2 rounded-full transition-all duration-300 ${
+                                isScrolled
                                     ? 'text-slate-700 hover:bg-slate-100'
                                     : 'text-white hover:bg-white/20'
-                                }`}
+                            }`}
                         >
                             {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
                         </button>
@@ -191,27 +202,43 @@ const Navbar = () => {
                 </div>
 
                 {/* Mobile Navigation */}
-                <div className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                <div className={`lg:hidden transition-all duration-500 ease-in-out overflow-hidden ${
+                    isMobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                    <div className={`py-4 space-y-2 rounded-xl mt-4 mb-4 border transition-all duration-500 ${
+                        isScrolled 
+                            ? 'bg-white/95 backdrop-blur-xl border-gray-200/50 shadow-2xl' 
+                            : 'bg-slate-900/95 backdrop-blur-xl border-white/20'
                     }`}>
-                    <div className="py-4 space-y-2 bg-white/10 backdrop-blur-lg rounded-xl mt-4 mb-4 border border-white/20">
                         {navLinks.map((link, index) => (
                             link.subItems ? (
                                 <div key={index}>
                                     <button
                                         onClick={() => toggleDropdown(link.text)}
-                                        className="flex justify-between items-center w-full px-6 py-3 text-white/90 hover:text-white hover:bg-white/20 transition-all duration-300 rounded-lg"
+                                        className={`flex justify-between items-center w-full px-6 py-3 transition-all duration-300 rounded-lg ${
+                                            isScrolled
+                                                ? 'text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600'
+                                                : 'text-white/90 hover:text-white hover:bg-white/20'
+                                        }`}
                                     >
                                         <span>{link.text}</span>
-                                        <ChevronDown className={`w-4 h-4 transition-transform ${openDropdown === link.text ? 'rotate-180' : ''}`} />
+                                        <ChevronDown className={`w-4 h-4 transition-transform ${
+                                            openDropdown === link.text ? 'rotate-180' : ''
+                                        }`} />
                                     </button>
-                                    <div className={`pl-6 overflow-hidden transition-all duration-300 ${openDropdown === link.text ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
-                                        }`}>
+                                    <div className={`pl-6 overflow-hidden transition-all duration-300 ${
+                                        openDropdown === link.text ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'
+                                    }`}>
                                         {link.subItems.map((sub, i) => (
                                             <Link
                                                 key={i}
                                                 to={sub.to}
                                                 onClick={() => setIsMobileMenuOpen(false)}
-                                                className="block px-6 py-2 text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 rounded-lg"
+                                                className={`block px-6 py-2 transition-all duration-300 rounded-lg ${
+                                                    isScrolled
+                                                        ? 'text-slate-600 hover:text-white hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-purple-600/20'
+                                                        : 'text-white/80 hover:text-white hover:bg-white/10'
+                                                }`}
                                             >
                                                 {sub.text}
                                             </Link>
@@ -223,20 +250,30 @@ const Navbar = () => {
                                     key={link.to}
                                     to={link.to}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="block px-6 py-3 text-white/90 hover:text-white hover:bg-white/20 transition-all duration-300 rounded-lg"
+                                    className={`block px-6 py-3 transition-all duration-300 rounded-lg ${
+                                        isScrolled
+                                            ? 'text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-blue-500 hover:to-purple-600'
+                                            : 'text-white/90 hover:text-white hover:bg-white/20'
+                                    }`}
                                 >
                                     {link.text}
                                 </Link>
                             )
                         ))}
 
-                        <div className="px-4 py-2 border-t border-white/20 mt-4">
+                        <div className={`px-4 py-2 border-t transition-all duration-500 ${
+                            isScrolled ? 'border-gray-200/50' : 'border-white/20'
+                        } mt-4`}>
                             {user ? (
                                 <div className="space-y-2">
                                     <Link
                                         to="/profile"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="flex items-center space-x-2 px-4 py-3 text-white/90 hover:text-white hover:bg-white/20 transition-all duration-300 rounded-lg"
+                                        className={`flex items-center space-x-2 px-4 py-3 transition-all duration-300 rounded-lg ${
+                                            isScrolled
+                                                ? 'text-slate-700 hover:text-white hover:bg-gradient-to-r hover:from-green-500 hover:to-blue-500'
+                                                : 'text-white/90 hover:text-white hover:bg-white/20'
+                                        }`}
                                     >
                                         <User className="w-4 h-4" />
                                         <span>Profil ({user.name})</span>
@@ -245,7 +282,7 @@ const Navbar = () => {
                                         <Link
                                             to="/admin"
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className="block px-4 py-3 text-yellow-300 font-semibold hover:bg-white/20 transition-all duration-300 rounded-lg"
+                                            className="block px-4 py-3 text-yellow-600 font-semibold hover:bg-yellow-500/20 transition-all duration-300 rounded-lg"
                                         >
                                             Admin Panel
                                         </Link>
@@ -255,7 +292,7 @@ const Navbar = () => {
                                             handleLogout();
                                             setIsMobileMenuOpen(false);
                                         }}
-                                        className="flex items-center space-x-2 w-full px-4 py-3 text-red-300 hover:text-red-200 hover:bg-red-500/20 transition-all duration-300 rounded-lg"
+                                        className="flex items-center space-x-2 w-full px-4 py-3 text-red-500 hover:text-red-400 hover:bg-red-500/20 transition-all duration-300 rounded-lg"
                                     >
                                         <LogOut className="w-4 h-4" />
                                         <span>Çıxış</span>
@@ -266,7 +303,11 @@ const Navbar = () => {
                                     <Link
                                         to="/login"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="block px-4 py-3 text-center text-white border border-white/30 rounded-lg hover:bg-white/10 transition-all duration-300"
+                                        className={`block px-4 py-3 text-center rounded-lg transition-all duration-300 ${
+                                            isScrolled
+                                                ? 'text-slate-700 border border-slate-300 hover:bg-slate-100'
+                                                : 'text-white border border-white/30 hover:bg-white/10'
+                                        }`}
                                     >
                                         Daxil Ol
                                     </Link>
@@ -285,8 +326,9 @@ const Navbar = () => {
             </div>
 
             {/* Bottom border animation */}
-            <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500 ${isScrolled ? 'opacity-100' : 'opacity-0'
-                }`}></div>
+            <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 transition-all duration-500 ${
+                isScrolled ? 'opacity-100' : 'opacity-0'
+            }`}></div>
         </nav>
     );
 };

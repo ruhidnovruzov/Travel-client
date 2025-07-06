@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { AuthContext } from '../../context/AuthContext';
+import { AuthContext } from '../../context/AuthContext.jsx'; // Fayl uzantısı əlavə edildi
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Eye, EyeOff, UserPlus, Loader2, CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react';
 
@@ -12,13 +12,16 @@ const RegisterPage = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+    // AuthContext-dən register funksiyasını, xəta, yüklənmə statusunu və istifadəçi məlumatını alırıq
     const { register, error, loading, user, clearError } = useContext(AuthContext);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user) {
+        // Əgər istifadəçi artıq daxil olubsa və doğrulanıbsa ana səhifəyə yönləndir
+        if (user && user.isVerified) {
             navigate('/');
         }
+        // Xəta mesajlarını idarə et
         if (error) {
             setMessage(error);
             const timer = setTimeout(() => {
@@ -31,15 +34,29 @@ const RegisterPage = () => {
 
     const submitHandler = async (e) => {
         e.preventDefault();
+        setMessage(''); // Hər göndərişdə mesajı təmizlə
 
         if (password !== confirmPassword) {
             setMessage('Şifrələr uyğun gəlmir!');
             return;
         }
 
-        const res = await register({ name, email, password });
-        if (res.success) {
-            setMessage(res.message);
+        try {
+            // register funksiyası API cavabını qaytarmalıdır
+            const res = await register({ name, email, password });
+
+            if (res.success) {
+                setMessage(res.message);
+                // Qeydiyyat uğurlu olduqdan sonra doğrulama səhifəsinə yönləndir
+                // Email adresini state olaraq ötürürük ki, doğrulama səhifəsində istifadə olunsun
+                navigate('/verify-email', { state: { email: email } });
+            } else {
+                // Backend-dən gələn xəta mesajını göstər
+                setMessage(res.message || 'Qeydiyyat zamanı xəta baş verdi.');
+            }
+        } catch (err) {
+            // Şəbəkə xətası və ya digər gözlənilməz xətalar
+            setMessage(err.message || 'Qeydiyyat zamanı gözlənilməz xəta baş verdi.');
         }
     };
 
@@ -70,11 +87,11 @@ const RegisterPage = () => {
                     {/* Message Display */}
                     {message && (
                         <div className={`mb-6 p-4 rounded-xl flex items-center gap-3 ${
-                            message.includes('Xəta') || message.includes('uyğun gəlmir') 
+                            message.includes('Xəta') || message.includes('uyğun gəlmir') || message.includes('baş verdi')
                                 ? 'bg-red-50 text-red-700 border border-red-200' 
                                 : 'bg-green-50 text-green-700 border border-green-200'
                         }`}>
-                            {message.includes('Xəta') || message.includes('uyğun gəlmir') ? (
+                            {message.includes('Xəta') || message.includes('uyğun gəlmir') || message.includes('baş verdi') ? (
                                 <AlertCircle className="h-5 w-5 flex-shrink-0" />
                             ) : (
                                 <CheckCircle2 className="h-5 w-5 flex-shrink-0" />

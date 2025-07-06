@@ -46,6 +46,25 @@ const HotelDetailPage = () => {
     // Show form if query params are missing
     const showFilterForm = !searchParams.get('checkInDate') || !searchParams.get('checkOutDate');
 
+    // Seçilmiş otaqların sayını hesabla
+    const selectedRoomsCount = Object.values(selectedRoomNumbers).reduce((total, roomNums) => total + roomNums.length, 0);
+
+    // Düymənin aktiv olub olmadığını yoxla
+    const isBookingButtonEnabled = user && 
+                                  selectedRoomsCount > 0 && 
+                                  selectedRoomsCount === numRooms && 
+                                  numberOfNights > 0;
+
+    // Debug üçün console.log əlavə et
+    useEffect(() => {
+        console.log('Selected room numbers:', selectedRoomNumbers);
+        console.log('Selected rooms count:', selectedRoomsCount);
+        console.log('Required rooms:', numRooms);
+        console.log('User:', user);
+        console.log('Number of nights:', numberOfNights);
+        console.log('Is booking button enabled:', isBookingButtonEnabled);
+    }, [selectedRoomNumbers, selectedRoomsCount, numRooms, user, numberOfNights, isBookingButtonEnabled]);
+
     useEffect(() => {
         const fetchHotelAndRooms = async () => {
             setLoading(true);
@@ -64,7 +83,6 @@ const HotelDetailPage = () => {
                     return { ...room, availableRoomNumbers };
                 });
                 setRooms(availableRooms);
-
             } catch (err) {
                 setError(err?.message || 'Xəta baş verdi.');
             } finally {
@@ -89,6 +107,7 @@ const HotelDetailPage = () => {
             };
             fetchHotel();
         }
+        setSelectedRoomNumbers({});
     }, [id, checkInDate, checkOutDate]);
 
     const handleRoomNumberSelect = (roomId, roomNumber, isChecked) => {
@@ -98,11 +117,15 @@ const HotelDetailPage = () => {
                 if (!newSelection[roomId]) {
                     newSelection[roomId] = [];
                 }
-                newSelection[roomId].push(roomNumber);
+                if (!newSelection[roomId].includes(roomNumber)) {
+                    newSelection[roomId].push(roomNumber);
+                }
             } else {
-                newSelection[roomId] = newSelection[roomId].filter(num => num !== roomNumber);
-                if (newSelection[roomId].length === 0) {
-                    delete newSelection[roomId];
+                if (newSelection[roomId]) {
+                    newSelection[roomId] = newSelection[roomId].filter(num => num !== roomNumber);
+                    if (newSelection[roomId].length === 0) {
+                        delete newSelection[roomId];
+                    }
                 }
             }
             return newSelection;
@@ -115,7 +138,6 @@ const HotelDetailPage = () => {
             return;
         }
 
-        const selectedRoomsCount = Object.values(selectedRoomNumbers).flat().length;
         if (selectedRoomsCount === 0 || selectedRoomsCount !== numRooms) {
             setBookingMessage({ type: 'error', text: `Zəhmət olmasa ${numRooms} otaq seçin.` });
             return;
@@ -239,7 +261,7 @@ const HotelDetailPage = () => {
                                 <h3 className="text-2xl font-bold text-gray-800 mb-4">Otel Haqqında</h3>
                                 <p className="text-gray-700 text-lg leading-relaxed">{hotel.description}</p>
                             </div>
-                            
+
                             <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl">
                                 <h4 className="text-xl font-bold text-gray-800 mb-3">Xidmətlər</h4>
                                 <div className="flex flex-wrap gap-2">
@@ -278,7 +300,7 @@ const HotelDetailPage = () => {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl text-center">
                                 <p className="text-gray-700 text-lg mb-2">Ən Ucuz Qiymət</p>
                                 <p className="text-4xl font-bold text-orange-600">${hotel.cheapestPrice}</p>
@@ -289,19 +311,19 @@ const HotelDetailPage = () => {
                 </div>
 
                 {/* Search Form */}
-{showFilterForm && (
-    <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
-        <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Rezervasiya Məlumatlarını Daxil Edin</h3>
-        <form
-            onSubmit={e => {
-                e.preventDefault();
-                setSearchParams({
-                    checkInDate: localCheckInDate,
-                    checkOutDate: localCheckOutDate,
-                    guests: localGuests,
-                    rooms: localRooms
-                });
-                setSelectedRoomNumbers({});
+                {showFilterForm && (
+                    <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
+                        <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Rezervasiya Məlumatlarını Daxil Edin</h3>
+                        <form
+                            onSubmit={e => {
+                                e.preventDefault();
+                                setSearchParams({
+                                    checkInDate: localCheckInDate,
+                                    checkOutDate: localCheckOutDate,
+                                    guests: localGuests,
+                                    rooms: localRooms
+                                });
+                                setSelectedRoomNumbers({});
                             }}
                             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
                         >
@@ -381,9 +403,9 @@ const HotelDetailPage = () => {
                                                 <Bed className="h-6 w-6 text-indigo-600" />
                                                 <h4 className="text-xl font-bold text-gray-800">{room.title}</h4>
                                             </div>
-                                            
+
                                             <p className="text-gray-600 mb-4 leading-relaxed">{room.desc}</p>
-                                            
+
                                             <div className="flex items-center justify-between mb-4">
                                                 <div className="flex items-center gap-2">
                                                     <Users className="h-5 w-5 text-gray-500" />
@@ -402,13 +424,13 @@ const HotelDetailPage = () => {
                                                         {room.availableRoomNumbers.map(roomNum => (
                                                             <label key={roomNum.number} className={`
                                                                 flex items-center px-4 py-2 rounded-full cursor-pointer transition-all duration-200
-                                                                ${selectedRoomNumbers[room._id]?.includes(roomNum.number) 
-                                                                    ? 'bg-indigo-600 text-white shadow-lg' 
+                                                                ${selectedRoomNumbers[room._id]?.includes(roomNum.number)
+                                                                    ? 'bg-indigo-600 text-white shadow-lg'
                                                                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                                                 }
-                                                                ${Object.values(selectedRoomNumbers).flat().length >= numRooms && 
-                                                                  !selectedRoomNumbers[room._id]?.includes(roomNum.number) 
-                                                                    ? 'opacity-50 cursor-not-allowed' 
+                                                                ${selectedRoomsCount >= numRooms &&
+                                                                    !selectedRoomNumbers[room._id]?.includes(roomNum.number)
+                                                                    ? 'opacity-50 cursor-not-allowed'
                                                                     : ''
                                                                 }
                                                             `}>
@@ -419,7 +441,7 @@ const HotelDetailPage = () => {
                                                                     onChange={(e) => handleRoomNumberSelect(room._id, roomNum.number, e.target.checked)}
                                                                     className="sr-only"
                                                                     disabled={
-                                                                        Object.values(selectedRoomNumbers).flat().length >= numRooms &&
+                                                                        selectedRoomsCount >= numRooms &&
                                                                         !selectedRoomNumbers[room._id]?.includes(roomNum.number)
                                                                     }
                                                                 />
@@ -444,44 +466,51 @@ const HotelDetailPage = () => {
                         <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
                             <div className="text-center space-y-6">
                                 <h3 className="text-2xl font-bold text-gray-800">Rezervasiya Təsdiqi</h3>
-                                
+
                                 <div className="flex justify-center items-center gap-4">
                                     <div className="text-center">
                                         <p className="text-sm text-gray-600">Seçilmiş Otaqlar</p>
-                                        <p className="text-xl font-bold text-indigo-600">{Object.values(selectedRoomNumbers).flat().length}</p>
+                                        <p className="text-xl font-bold text-indigo-600">{selectedRoomsCount}</p>
+                                    </div>
+                                    <div className="text-center">
+                                        <p className="text-sm text-gray-600">Lazım Olan Otaqlar</p>
+                                        <p className="text-xl font-bold text-purple-600">{numRooms}</p>
                                     </div>
                                     <div className="text-center">
                                         <p className="text-sm text-gray-600">Ümumi Qiymət</p>
                                         <p className="text-xl font-bold text-green-600">
-                                            ${(Object.values(selectedRoomNumbers).flat().reduce((sum, num) => {
-                                                const roomId = Object.keys(selectedRoomNumbers).find(key => selectedRoomNumbers[key].includes(num));
+                                            ${Object.entries(selectedRoomNumbers).reduce((total, [roomId, roomNums]) => {
                                                 const roomInfo = rooms.find(r => r._id === roomId);
-                                                return sum + (roomInfo ? roomInfo.price : 0);
-                                            }, 0) * numberOfNights).toFixed(2)}
+                                                return total + (roomInfo ? roomInfo.price * roomNums.length : 0);
+                                            }, 0) * numberOfNights}
                                         </p>
                                     </div>
                                 </div>
 
                                 <button
                                     onClick={handleBooking}
-                                    disabled={!user || Object.values(selectedRoomNumbers).flat().length !== numRooms || numberOfNights === 0}
+                                    disabled={!isBookingButtonEnabled}
                                     className={`
                                         px-12 py-4 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105
-                                        ${!user || Object.values(selectedRoomNumbers).flat().length !== numRooms || numberOfNights === 0
+                                        ${!isBookingButtonEnabled
                                             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                             : 'bg-gradient-to-r from-green-600 to-emerald-600 text-white hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl'
                                         }
                                     `}
                                 >
-                                    {user ? 'Rezervasiya Et' : 'Daxil Olun'}
+                                    {!user ? 'Daxil Olun' : 
+                                     selectedRoomsCount === 0 ? 'Otaq Seçin' :
+                                     selectedRoomsCount < numRooms ? `Daha ${numRooms - selectedRoomsCount} Otaq Seçin` :
+                                     selectedRoomsCount > numRooms ? 'Çox Otaq Seçildi' :
+                                     'Rezervasiya Et'}
                                 </button>
 
                                 {bookingMessage && (
                                     <div className={`
                                         p-4 rounded-xl flex items-center justify-center gap-3
-                                        ${bookingMessage.type === 'error' ? 'bg-red-50 text-red-700' : 
-                                          bookingMessage.type === 'success' ? 'bg-green-50 text-green-700' : 
-                                          'bg-blue-50 text-blue-700'}
+                                        ${bookingMessage.type === 'error' ? 'bg-red-50 text-red-700' :
+                                            bookingMessage.type === 'success' ? 'bg-green-50 text-green-700' :
+                                                'bg-blue-50 text-blue-700'}
                                     `}>
                                         {bookingMessage.type === 'error' && <AlertCircle className="h-5 w-5" />}
                                         {bookingMessage.type === 'success' && <CheckCircle2 className="h-5 w-5" />}

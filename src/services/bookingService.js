@@ -3,7 +3,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-    baseURL: 'https://travel-back-5euo.onrender.com/api',
+    baseURL: 'https://travel-back-new.onrender.com/api',
     withCredentials: true,
 });
 
@@ -41,7 +41,7 @@ const bookingService = {
     // Rezervasiyanın statusunu yeniləmək funksiyası (yalnız admin)
     updateBookingStatus: async (id, statusData) => {
         try {
-            const response = await API.put(`/bookings/${id}`, statusData);
+            const response = await API.put(`/bookings/${id}/status`, statusData); // Endpoint düzəlişi
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || error.message;
@@ -51,7 +51,7 @@ const bookingService = {
     // Rezervasiyanı ləğv etmək funksiyası
     cancelBooking: async (id) => {
         try {
-            const response = await API.put(`/bookings/cancel/${id}`);
+            const response = await API.put(`/bookings/${id}/cancel`); // Endpoint düzəlişi
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || error.message;
@@ -62,6 +62,16 @@ const bookingService = {
     getAllBookings: async () => {
         try {
             const response = await API.get('/bookings');
+            return response.data;
+        } catch (error) {
+            throw error.response?.data?.message || error.message;
+        }
+    },
+
+    // Yeni: Rezervasiya üçün ödənişi təsdiqləmək funksiyası
+    confirmBookingPayment: async (id, paymentData) => {
+        try {
+            const response = await API.put(`/bookings/${id}/confirm-payment`, paymentData);
             return response.data;
         } catch (error) {
             throw error.response?.data?.message || error.message;

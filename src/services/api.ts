@@ -1,6 +1,6 @@
-import { User, Tour, Hotel, Room, Flight, Car, ApiResponse } from '../types';
+import { User, Tour, Hotel, Room, Flight, Car, Booking, ApiResponse } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://travel-back-5euo.onrender.com/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://travel-back-new.onrender.com/api';
 
 class ApiService {
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -199,6 +199,37 @@ class ApiService {
     return this.request(`/cars/availability/${id}`, {
       method: 'PUT',
       body: JSON.stringify({ dates }),
+    });
+  }
+
+  // Bookings (New methods for bookings)
+  async getAllBookings(): Promise<ApiResponse<Booking[]>> {
+    return this.request('/bookings'); // Admin üçün bütün rezervasiyaları gətirir
+  }
+
+  async updateBookingStatus(id: string, statusData: { status?: string; paymentStatus?: string }): Promise<ApiResponse<Booking>> {
+    return this.request(`/bookings/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(statusData),
+    });
+  }
+
+  async cancelBooking(id: string): Promise<ApiResponse<Booking>> {
+    return this.request(`/bookings/${id}/cancel`, {
+      method: 'PUT',
+    });
+  }
+
+  // You might also need a getBookingById for admin if you want to view a single booking's details
+  async getBookingById(id: string): Promise<ApiResponse<Booking>> {
+    return this.request(`/bookings/${id}`);
+  }
+
+  // If you want to allow admin to create bookings directly (less common for admin panels)
+  async createBooking(bookingData: Partial<Booking>): Promise<ApiResponse<Booking>> {
+    return this.request('/bookings', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
     });
   }
 }

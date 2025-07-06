@@ -19,7 +19,7 @@ const FlightSearchPage = () => {
     useEffect(() => {
         const fetchAllFlights = async () => {
             try {
-                const res = await fetch('https://travel-back-5euo.onrender.com/api/flights');
+                const res = await fetch('https://travel-back-new.onrender.com/api/flights');
                 const data = await res.json();
                 if (data.success) {
                     setAllFlights(data.data);
@@ -30,35 +30,92 @@ const FlightSearchPage = () => {
                     setDestinations(uniqueDestinations);
                 }
             } catch (err) {
-                // ignore for selects
+                console.error('Error fetching flights:', err);
             }
         };
         fetchAllFlights();
     }, []);
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
+    // Auto-search when origin or destination changes
+    useEffect(() => {
+        if (origin && destination) {
+            searchFlights();
+        } else {
+            setFlights([]);
+        }
+    }, [origin, destination, departureDate]);
+
+    const searchFlights = async () => {
         setLoading(true);
         setError('');
-        setFlights([]);
         try {
-            const params = new URLSearchParams({
+            const params = new URLSearchParams();
+            if (origin) params.append('origin', origin);
+            if (destination) params.append('destination', destination);
+            if (departureDate) params.append('departureDate', departureDate);
+
+            console.log('Searching with params:', {
                 origin,
                 destination,
                 departureDate,
+                url: `https://travel-back-new.onrender.com/api/flights?${params.toString()}`
             });
-            const res = await fetch(`https://travel-back-5euo.onrender.com/api/flights?${params.toString()}`);
+
+            const res = await fetch(`https://travel-back-new.onrender.com/api/flights?${params.toString()}`);
             const data = await res.json();
+
+            console.log('API Response:', data);
+
             if (data.success) {
                 setFlights(data.data);
             } else {
                 setError('Uçuş tapılmadı.');
+                setFlights([]);
             }
         } catch (err) {
+            console.error('Search error:', err);
             setError('Xəta baş verdi.');
+            setFlights([]);
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleSearch = async (e) => {
+        e.preventDefault();
+        if (!origin || !destination) {
+            setError('Zəhmət olmasa gediş və çatış şəhərlərini seçin.');
+            return;
+        }
+        await searchFlights();
+    };
+
+    const clearSearch = () => {
+        setOrigin('');
+        setDestination('');
+        setDepartureDate('');
+        setPassengers(1);
+        setFlights([]);
+        setError('');
+    };
+
+    const formatTime = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleTimeString('az-AZ', {
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: 'Asia/Baku'
+        });
+    };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('az-AZ', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            timeZone: 'Asia/Baku'
+        });
     };
 
     const popularDestinations = [
@@ -166,7 +223,7 @@ const FlightSearchPage = () => {
 
                             {/* Departure Date */}
                             <div className="relative">
-                                <label className="block text-white text-sm font-medium mb-2">Gediş Tarixi</label>
+                                <label className="block text-white text-sm font-medium mb-2">Gediş Tarixi (İstəyə bağlı)</label>
                                 <div className="relative">
                                     <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                                     <input
@@ -174,7 +231,6 @@ const FlightSearchPage = () => {
                                         className="w-full pl-10 pr-4 py-3 bg-white/20 border border-white/30 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm"
                                         value={departureDate}
                                         onChange={(e) => setDepartureDate(e.target.value)}
-                                        required
                                     />
                                 </div>
                             </div>
@@ -198,56 +254,128 @@ const FlightSearchPage = () => {
                                 </div>
                             </div>
                         </div>
-                        <button
-                            type="submit"
-                            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 transform hover:scale-105 flex items-center justify-center space-x-2"
-                        >
-                            <Search className="h-5 w-5" />
-                            <span>Uçuş Axtar</span>
-                            <ArrowRight className="h-5 w-5" />
-                        </button>
+                        <div className="flex justify-center gap-4">
+                            <button
+                                type="submit"
+                                className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold py-4 px-8 rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 transform hover:scale-105 flex items-center space-x-2"
+                            >
+                                <Search className="h-5 w-5" />
+                                <span>Uçuş Axtar</span>
+                                <ArrowRight className="h-5 w-5" />
+                            </button>
+                            <button
+                                type="button"
+                                onClick={clearSearch}
+                                className="bg-gray-500 hover:bg-gray-600 text-white font-bold py-4 px-8 rounded-xl shadow-lg focus:outline-none focus:ring-4 focus:ring-gray-300 transition-all duration-300 transform hover:scale-105"
+                            >
+                                Təmizlə
+                            </button>
+                        </div>
                     </form>
                 </div>
 
                 {/* Uçuş nəticələri */}
                 <div className="mb-16">
                     {loading && (
-                        <div className="text-center text-white text-xl py-8">Yüklənir...</div>
+                        <div className="text-center text-white text-xl py-8">
+                            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                            Uçuşlar axtarılır...
+                        </div>
                     )}
                     {error && (
-                        <div className="text-center text-red-300 text-lg py-8">{error}</div>
+                        <div className="text-center text-red-300 text-lg py-8 bg-red-500/20 rounded-xl border border-red-500/30">
+                            {error}
+                        </div>
                     )}
                     {!loading && flights.length > 0 && (
                         <div>
-                            <h2 className="text-3xl font-bold text-white text-center mb-8">Axtarış Nəticələri</h2>
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-3xl font-bold text-white">
+                                    Axtarış Nəticələri ({flights.length})
+                                </h2>
+                                <div className="text-white/80">
+                                    {origin} → {destination}
+                                    {departureDate && ` • ${formatDate(departureDate)}`}
+                                </div>
+                            </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                                 {flights.map((flight) => (
                                     <div
                                         key={flight._id}
-                                        className="bg-white/20 rounded-2xl p-6 shadow-lg text-white cursor-pointer hover:bg-white/30 transition"
+                                        className="bg-white/20 backdrop-blur-md rounded-2xl p-6 shadow-lg text-white cursor-pointer hover:bg-white/30 transition-all duration-300 transform hover:-translate-y-1 border border-white/20"
                                         onClick={() => navigate(`/flights/${flight._id}`)}
                                     >
-                                        <div className="flex items-center justify-between mb-2">
-                                            <span className="font-bold text-lg">{flight.airline}</span>
-                                            <span className="text-sm">{flight.flightNumber}</span>
+                                        <div className="flex items-center justify-between mb-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-blue-500/30 rounded-full">
+                                                    <Plane className="h-5 w-5 text-blue-300" />
+                                                </div>
+                                                <div>
+                                                    <span className="font-bold text-lg">{flight.airline}</span>
+                                                    <div className="text-sm text-white/70">#{flight.flightNumber}</div>
+                                                </div>
+                                            </div>
+                                            <div className="text-right">
+                                                <div className="text-2xl font-bold text-green-300">${flight.price}</div>
+                                                <div className="text-sm text-white/70">sərnişin başına</div>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center mb-2">
-                                            <Plane className="mr-2" />
-                                            <span>{flight.origin} <ArrowRight className="inline mx-1" /> {flight.destination}</span>
+
+                                        <div className="space-y-3 mb-4">
+                                            {/* Gediş */}
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+                                                    <div>
+                                                        <div className="font-semibold">{formatTime(flight.departureTime)}</div>
+                                                        <div className="text-sm text-white/70">{flight.origin}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Uçuş xətti */}
+                                            <div className="flex items-center justify-center">
+                                                <div className="flex-1 h-0.5 bg-white/30"></div>
+                                                <Clock className="h-4 w-4 text-white/50 mx-2" />
+                                                <span className="text-sm text-white/70">{flight.duration}</span>
+                                                <div className="flex-1 h-0.5 bg-white/30"></div>
+                                            </div>
+
+                                            {/* Çatış */}
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-3 h-3 bg-green-400 rounded-full"></div>
+                                                    <div>
+                                                        <div className="font-semibold">{formatTime(flight.arrivalTime)}</div>
+                                                        <div className="text-sm text-white/70">{flight.destination}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="mb-2">
-                                            <Calendar className="inline mr-1" />
-                                            {new Date(flight.departureTime).toLocaleString()} - {new Date(flight.arrivalTime).toLocaleString()}
-                                        </div>
-                                        <div className="mb-2">
-                                            <span className="font-semibold">Qiymət:</span> <span className="text-green-300 font-bold">{flight.price} ₼</span>
-                                        </div>
-                                        <div>
-                                            <span className="font-semibold">Yerlər:</span> {flight.availableSeats} / {flight.totalSeats}
+
+                                        <div className="flex items-center justify-between text-sm">
+                                            <div className="flex items-center gap-4">
+                                                <span>Mövcud: <span className="font-semibold text-blue-300">{flight.availableSeats}</span></span>
+                                                <span>Ümumi: <span className="font-semibold">{flight.totalSeats}</span></span>
+                                            </div>
+                                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${flight.status === 'scheduled' ? 'bg-green-500/30 text-green-300' :
+                                                flight.status === 'delayed' ? 'bg-yellow-500/30 text-yellow-300' :
+                                                    'bg-red-500/30 text-red-300'
+                                                }`}>
+                                                {flight.status === 'scheduled' ? 'Planlaşdırılıb' :
+                                                    flight.status === 'delayed' ? 'Gecikdi' : 'Ləğv edildi'}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
                             </div>
+                        </div>
+                    )}
+                    {!loading && origin && destination && flights.length === 0 && !error && (
+                        <div className="text-center text-white/80 text-lg py-8 bg-white/10 rounded-xl border border-white/20">
+                            <Plane className="h-16 w-16 text-white/50 mx-auto mb-4" />
+                            <p>Bu marşrut üçün mövcud uçuş tapılmadı.</p>
+                            <p className="text-sm mt-2">Zəhmət olmasa başqa tarix və ya marşrut seçin.</p>
                         </div>
                     )}
                 </div>

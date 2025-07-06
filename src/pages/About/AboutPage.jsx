@@ -2,7 +2,7 @@ import React from 'react';
 
 const AboutPage = () => {
     return (
-        <div className="container pt-20 mx-auto p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-[calc(100vh-64px)]">
+        <div className="container pt-20 mx-auto p-6 bg-gradient-to-br  min-h-[calc(100vh-64px)]">
             <div className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 max-w-3xl mx-auto">
                 <h2 className="text-4xl font-extrabold text-center mb-10 text-blue-800 drop-shadow-lg">Haqqımızda</h2>
 

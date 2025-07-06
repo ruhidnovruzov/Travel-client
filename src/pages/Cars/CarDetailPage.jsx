@@ -238,7 +238,7 @@ const CarDetailPage = () => {
                                         </p>
                                     )}
                                     {!isCarAvailableForDates(car, rentalStartDate, rentalEndDate) && rentalStartDate && rentalEndDate && rentalDays > 0 && (
-                                        <p className="text-red-500 text-sm mt-2">Seçilmiş tarixlərdə bu avtomobil mövcud deyil.</p>
+                                        <p className="text-red-500 text-sm mt-2">Seçilmiş tarixlərdə bu avtomobil mövcud deyil</p>
                                     )}
                                 </div>
                             </div>

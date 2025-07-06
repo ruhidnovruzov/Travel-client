@@ -7,7 +7,8 @@ import {
   Bed, 
   Plane, 
   Car,
-  LogOut
+  LogOut,
+  ClipboardList
 } from 'lucide-react';
 import Header from '../../components/admin/Header';
 import Dashboard from '../../components/admin/Dashboard';
@@ -17,6 +18,7 @@ import HotelsPage from '../../components/admin/pages/HotelsPage';
 import RoomsPage from '../../components/admin/pages/RoomsPage';
 import FlightsPage from '../../components/admin/pages/FlightsPage';
 import CarsPage from '../../components/admin/pages/CarsPage';
+import BookingsPage from '../../components/admin/pages/BookingsPage';
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -26,6 +28,7 @@ const menuItems = [
   { id: 'rooms', label: 'Rooms', icon: Bed },
   { id: 'flights', label: 'Flights', icon: Plane },
   { id: 'cars', label: 'Cars', icon: Car },
+  { id: 'bookings', label: 'Bookings', icon: ClipboardList }, // Yeni: BookingsPage üçün ikon
 ];
 
 function AdminPanel() {
@@ -40,6 +43,7 @@ function AdminPanel() {
       case 'rooms': return 'Room Management';
       case 'flights': return 'Flight Management';
       case 'cars': return 'Car Management';
+      case 'bookings': return 'Booking Management'; // Yeni: BookingsPage üçün başlıq
       default: return 'Dashboard';
     }
   };
@@ -53,6 +57,7 @@ function AdminPanel() {
       case 'rooms': return <RoomsPage />;
       case 'flights': return <FlightsPage />;
       case 'cars': return <CarsPage />;
+      case 'bookings': return <BookingsPage />; // Yeni: BookingsPage üçün render
       default: return <Dashboard />;
     }
   };

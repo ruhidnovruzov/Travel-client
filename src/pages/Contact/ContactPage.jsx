@@ -11,7 +11,7 @@ const ContactPage = () => {
         e.preventDefault();
         setSubmitStatus('loading');
         try {
-            const response = await fetch('https://travel-back-5euo.onrender.com/api/contact', {
+            const response = await fetch('https://travel-back-new.onrender.com/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, email, subject, message }),
@@ -38,7 +38,7 @@ const ContactPage = () => {
     };
 
     return (
-        <div className="container pt-20 mx-auto p-6 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 min-h-[calc(100vh-64px)]">
+        <div className="container pt-20 mx-auto p-6 bg-gradient-to-br min-h-[calc(100vh-64px)]">
             <div className="bg-white rounded-3xl shadow-2xl p-10 border border-gray-100 max-w-2xl mx-auto">
                 <h2 className="text-4xl font-extrabold text-center mb-10 text-blue-800 drop-shadow-lg">Əlaqə</h2>
 

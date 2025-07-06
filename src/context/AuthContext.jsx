@@ -1,169 +1,196 @@
-// frontend/src/context/AuthContext.js
-
-import React, { createContext, useReducer, useEffect } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
-// 1. AuthContext-i yarat
+// Axios instance-i yaradırıq. Bu, bütün API çağırışları üçün baza URL-i və çərəzləri avtomatik idarə edəcək.
+const API = axios.create({
+    baseURL: 'https://travel-back-new.onrender.com/api',
+    withCredentials: true,
+});
+
+// AuthContext yaradırıq. Bu, tətbiqin hər yerində autentifikasiya məlumatlarına daxil olmağa imkan verəcək.
 export const AuthContext = createContext();
 
-// 2. Initial State (başlanğıc vəziyyət)
-const initialState = {
-    user: null,         // Daxil olmuş istifadəçi məlumatları
-    token: null,        // JWT token
-    loading: true,      // Yükləmə vəziyyəti (API çağırışları zamanı)
-    error: null         // Xəta mesajı
-};
-
-// 3. Auth Reducer funksiyası
-const authReducer = (state, action) => {
-    switch (action.type) {
-        case 'LOGIN_SUCCESS':
-        case 'REGISTER_SUCCESS':
-            localStorage.setItem('user', JSON.stringify(action.payload.user));
-            localStorage.setItem('token', action.payload.token);
-            return {
-                ...state,
-                user: action.payload.user,
-                token: action.payload.token,
-                loading: false,
-                error: null,
-            };
-        case 'AUTH_FAIL':
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                user: null,
-                token: null,
-                loading: false,
-                error: action.payload,
-            };
-        case 'LOGOUT':
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                user: null,
-                token: null,
-                loading: false,
-                error: null,
-            };
-        case 'SET_LOADING':
-            return {
-                ...state,
-                loading: action.payload,
-            };
-        case 'CLEAR_ERROR':
-            return {
-                ...state,
-                error: null,
-            };
-        case 'USER_LOADED':
-            return {
-                ...state,
-                user: action.payload.user,
-                token: action.payload.token,
-                loading: false,
-                error: null,
-            };
-        case 'LOAD_USER_ERROR':
-            localStorage.removeItem('user');
-            localStorage.removeItem('token');
-            return {
-                ...state,
-                user: null,
-                token: null,
-                loading: false,
-                error: action.payload,
-            };
-        default:
-            return state;
-    }
-};
-
-// 4. AuthProvider komponenti
+// AuthProvider komponenti, autentifikasiya state-ini idarə edir və uşaq komponentlərinə ötürür.
 export const AuthProvider = ({ children }) => {
-    const [state, dispatch] = useReducer(authReducer, initialState);
+    // İstifadəçi məlumatlarını, yüklənmə state-ini və xəta mesajlarını saxlayırıq.
+    const [user, setUser] = useState(null);
+    const [token, setToken] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-    // Axios instansiyasını yarat və çərəzlərin göndərilməsini təmin et
-    const API = axios.create({
-        baseURL: 'https://travel-back-5euo.onrender.com/api', // Backend API-nizin əsas URL-i
-        withCredentials: true, // Çərəzləri avtomatik göndər və qəbul et
-    });
-
-    // İstifadəçini yüklə (səhifə yenilənəndə və ya tətbiq başlayanda)
+    // Tətbiq yükləndikdə və ya user state-i dəyişdikdə işə düşür.
+    // Çərəzlərdən istifadəçi məlumatlarını çəkmək üçün `getMe` API çağırışını edir.
     useEffect(() => {
-        const loadUser = async () => {
-            dispatch({ type: 'SET_LOADING', payload: true });
-            const token = localStorage.getItem('token');
-            const user = localStorage.getItem('user');
-
-            if (token && user) {
-                try {
-                    // Backenddən tokeni doğrulat
-                    const res = await API.get('/auth/me'); // Backenddəki getMe endpointi
-                    dispatch({
-                        type: 'USER_LOADED',
-                        payload: { user: res.data.data, token },
-                    });
-                } catch (err) {
-                    dispatch({ type: 'LOAD_USER_ERROR', payload: err.response?.data?.message || 'Token etibarsızdır.' });
-                }
-            } else {
-                dispatch({ type: 'LOAD_USER_ERROR', payload: null }); // Heç bir istifadəçi yoxdur, sadəcə yüklənməni bitir
+        const fetchUser = async () => {
+            setLoading(true);
+            const storedToken = localStorage.getItem('token');
+            if (storedToken) {
+                setToken(storedToken);
+            }
+            try {
+                const res = await API.get('/auth/me');
+                setUser(res.data.data);
+            } catch (err) {
+                setUser(null);
+                setToken(null);
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+            } finally {
+                setLoading(false);
             }
         };
-
-        loadUser();
-    }, []); // Yalnız komponent mount olanda işə düşsün
+        fetchUser();
+    }, []);
 
     // Qeydiyyat funksiyası
     const register = async (userData) => {
-        dispatch({ type: 'SET_LOADING', payload: true });
+        setLoading(true);
+        setError(null);
         try {
             const res = await API.post('/auth/register', userData);
-            dispatch({ type: 'REGISTER_SUCCESS', payload: res.data });
-            return { success: true, message: 'Qeydiyyat uğurludur!' };
+            // Qeydiyyatdan sonra istifadəçini avtomatik daxil etmirik,
+            // əvəzinə doğrulama e-poçtunun göndərilməsi barədə mesaj qaytarırıq.
+            return { success: true, message: res.data.message, user: res.data.user };
         } catch (err) {
-            dispatch({ type: 'AUTH_FAIL', payload: err.response?.data?.message || 'Qeydiyyat zamanı xəta baş verdi.' });
-            return { success: false, message: err.response?.data?.message || 'Qeydiyyat zamanı xəta baş verdi.' };
+            const errorMessage = err.response?.data?.message || 'Qeydiyyat zamanı xəta baş verdi.';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
         }
     };
 
     // Daxil olma funksiyası
-    const login = async (userData) => {
-        dispatch({ type: 'SET_LOADING', payload: true });
+    const login = async (credentials) => {
+        setLoading(true);
+        setError(null);
         try {
-            const res = await API.post('/auth/login', userData);
-            dispatch({ type: 'LOGIN_SUCCESS', payload: res.data });
-            return { success: true, message: 'Daxil olma uğurludur!' };
+            const res = await API.post('/auth/login', credentials);
+            setUser(res.data.user);
+            setToken(res.data.token);
+            localStorage.setItem('user', JSON.stringify(res.data.user));
+            localStorage.setItem('token', res.data.token);
+            return { success: true, message: 'Uğurla daxil oldunuz.' };
         } catch (err) {
-            dispatch({ type: 'AUTH_FAIL', payload: err.response?.data?.message || 'Daxil olma zamanı xəta baş verdi.' });
-            return { success: false, message: err.response?.data?.message || 'Daxil olma zamanı xəta baş verdi.' };
+            const errorMessage = err.response?.data?.message || 'Daxil olma zamanı xəta baş verdi.';
+            setError(errorMessage);
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Çıxış funksiyası
+    // Sistemdən çıxış funksiyası
     const logout = async () => {
-        dispatch({ type: 'SET_LOADING', payload: true });
+        setLoading(true);
+        setError(null);
         try {
-            await API.get('/auth/logout'); // Backend-ə logout sorğusu göndər
-            dispatch({ type: 'LOGOUT' });
-            return { success: true, message: 'Sistemdən uğurla çıxış edildi.' };
+            await API.get('/auth/logout');
         } catch (err) {
-            console.error("Logout error:", err);
-            dispatch({ type: 'LOGOUT' }); // Xəta olsa belə lokal state-i təmizlə
-            return { success: false, message: 'Çıxış zamanı xəta baş verdi.' };
+            // Xəta olsa belə local state-i təmizlə
+        } finally {
+            setUser(null);
+            setToken(null);
+            localStorage.removeItem('user');
+            localStorage.removeItem('token');
+            setLoading(false);
+        }
+        return { success: true, message: 'Uğurla çıxış edildi.' };
+    };
+
+    // Email doğrulama funksiyası (OTP ilə)
+    const verifyEmail = async (email, otp) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await API.post('/auth/verify-email', { email, otp });
+            setUser(res.data.user);
+            return { success: true, message: res.data.message || 'Email uğurla doğrulandı.' };
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || 'Email doğrulama zamanı xəta baş verdi.';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
         }
     };
 
-    // Xəta mesajını təmizləmək üçün
-    const clearError = () => {
-        dispatch({ type: 'CLEAR_ERROR' });
+    // OTP-ni yenidən göndərmə funksiyası
+    const resendOtp = async (email) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await API.post('/auth/resend-otp', { email });
+            return { success: true, message: res.data.message || 'Yeni doğrulama kodu göndərildi.' };
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || 'Kodu yenidən göndərərkən xəta baş verdi.';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
+        }
     };
 
+    // Şifrə sıfırlama e-poçtu göndərmə funksiyası
+    const forgotPassword = async (email) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await API.post('/auth/forgot-password', { email });
+            return { success: true, message: res.data.message };
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || 'Şifrə sıfırlama e-poçtu göndərilərkən xəta baş verdi.';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Şifrəni token ilə sıfırlama funksiyası
+    const resetPassword = async (token, password) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await API.put(`/auth/reset-password/${token}`, { password });
+            return { success: true, message: res.data.message };
+        } catch (err) {
+            const errorMessage = err.response?.data?.message || 'Şifrə sıfırlanarkən xəta baş verdi.';
+            setError(errorMessage);
+            return { success: false, message: errorMessage };
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Xəta mesajını təmizləmək üçün funksiya
+    const clearError = () => {
+        setError(null);
+    };
+
+    // Kontekst dəyərlərini uşaq komponentlərinə ötürürük.
     return (
-        <AuthContext.Provider value={{ ...state, register, login, logout, clearError }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                token,
+                loading,
+                error,
+                register,
+                login,
+                logout,
+                verifyEmail,
+                resendOtp,
+                forgotPassword,
+                resetPassword,
+                clearError,
+                API,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

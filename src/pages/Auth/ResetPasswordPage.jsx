@@ -1,38 +1,55 @@
-// frontend/src/pages/Auth/LoginPage.js
+// frontend/src/pages/Auth/ResetPasswordPage.js
 
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from '../../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, LogIn, Loader2, AlertCircle, CheckCircle2, User } from 'lucide-react';
+import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Lock, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 
-const LoginPage = () => {
-    const [email, setEmail] = useState('');
+const ResetPasswordPage = () => {
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
     const [showPassword, setShowPassword] = useState(false);
-
-    const { login, error, loading, user, clearError } = useContext(AuthContext);
+    const { resetPassword, loading, error, clearError } = useContext(AuthContext);
+    const { token } = useParams(); // URL-dən tokeni al
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user) {
-            navigate('/');
-        }
-        if (error) {
-            setMessage(error);
-            const timer = setTimeout(() => {
-                clearError();
-                setMessage('');
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [user, error, navigate, clearError]);
+        clearError(); // Səhifə yüklənəndə xətaları təmizlə
+        setMessage('');
+    }, [clearError]);
 
     const submitHandler = async (e) => {
         e.preventDefault();
-        const res = await login({ email, password });
+        clearError();
+        setMessage('');
+
+        if (password !== confirmPassword) {
+            setMessage('Şifrələr uyğun gəlmir!');
+            return;
+        }
+
+        if (password.length < 6) {
+            setMessage('Şifrə minimum 6 simvol olmalıdır.');
+            return;
+        }
+
+        const res = await resetPassword(token, password);
         if (res.success) {
             setMessage(res.message);
+            // Şifrə uğurla yeniləndikdən sonra istifadəçini daxil olma səhifəsinə yönləndir
+            setTimeout(() => {
+                navigate('/login');
+            }, 3000);
+        } else {
+            setMessage(res.message); // Xətanı göstər
+        }
+        // Mesaj 5 saniyə sonra təmizlənsin (əgər avtomatik yönləndirmə yoxdursa)
+        if (!res.success) {
+            setTimeout(() => {
+                setMessage('');
+                clearError();
+            }, 5000);
         }
     };
 
@@ -51,10 +68,10 @@ const LoginPage = () => {
                     {/* Header */}
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
-                            <User className="h-8 w-8 text-white" />
+                            <Lock className="h-8 w-8 text-white" />
                         </div>
-                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Xoş Gəlmisiniz</h1>
-                        <p className="text-gray-600">Hesabınıza daxil olun</p>
+                        <h1 className="text-3xl font-bold text-gray-800 mb-2">Şifrəni Sıfırla</h1>
+                        <p className="text-gray-600">Yeni şifrənizi daxil edin.</p>
                     </div>
 
                     {/* Message Display */}
@@ -77,40 +94,22 @@ const LoginPage = () => {
                     {loading && (
                         <div className="mb-6 p-4 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-3">
                             <Loader2 className="h-5 w-5 animate-spin flex-shrink-0" />
-                            <p className="font-medium">Daxil olunur...</p>
+                            <p className="font-medium">Şifrə yenilənir...</p>
                         </div>
                     )}
 
                     {/* Form */}
                     <form onSubmit={submitHandler} className="space-y-6">
-                        {/* Email Field */}
+                        {/* New Password Field */}
                         <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                                <Mail className="h-4 w-4 text-indigo-500" />
-                                Email
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full px-4 py-3 pl-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm placeholder-gray-400"
-                                    placeholder="email@example.com"
-                                    required
-                                />
-                                <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-                            </div>
-                        </div>
-
-                        {/* Password Field */}
-                        <div className="space-y-2">
-                            <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                            <label htmlFor="password" className="flex items-center gap-2 text-sm font-medium text-gray-700">
                                 <Lock className="h-4 w-4 text-indigo-500" />
-                                Şifrə
+                                Yeni Şifrə
                             </label>
                             <div className="relative">
                                 <input
                                     type={showPassword ? 'text' : 'password'}
+                                    id="password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                     className="w-full px-4 py-3 pl-12 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm placeholder-gray-400"
@@ -132,16 +131,25 @@ const LoginPage = () => {
                             </div>
                         </div>
 
-                        {/* Forgot Password Link - YENİ ƏLAVƏ */}
-                        <div className="text-right text-sm">
-                            <Link 
-                                to="/forgot-password" 
-                                className="font-medium text-indigo-600 hover:text-indigo-700 transition-colors duration-300"
-                            >
-                                Şifrəni unutdum?
-                            </Link>
+                        {/* Confirm Password Field */}
+                        <div className="space-y-2">
+                            <label htmlFor="confirmPassword" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                                <Lock className="h-4 w-4 text-indigo-500" />
+                                Şifrəni Təsdiqlə
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    id="confirmPassword"
+                                    value={confirmPassword}
+                                    onChange={(e) => setConfirmPassword(e.target.value)}
+                                    className="w-full px-4 py-3 pl-12 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-300 bg-white/50 backdrop-blur-sm placeholder-gray-400"
+                                    placeholder="••••••••"
+                                    required
+                                />
+                                <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                            </div>
                         </div>
-
 
                         {/* Submit Button */}
                         <button
@@ -156,50 +164,25 @@ const LoginPage = () => {
                             {loading ? (
                                 <Loader2 className="h-5 w-5 animate-spin" />
                             ) : (
-                                <LogIn className="h-5 w-5" />
+                                <Lock className="h-5 w-5" />
                             )}
-                            {loading ? 'Daxil olunur...' : 'Daxil Ol'}
+                            {loading ? 'Yenilənir...' : 'Şifrəni Yenilə'}
                         </button>
                     </form>
 
-                    {/* Divider */}
-                    <div className="my-8 flex items-center">
-                        <div className="flex-1 border-t border-gray-200"></div>
-                        <span className="px-4 text-sm text-gray-500 bg-white rounded-full">və ya</span>
-                        <div className="flex-1 border-t border-gray-200"></div>
+                    {/* Back to Login Link */}
+                    <div className="text-center mt-8">
+                        <Link 
+                            to="/login" 
+                            className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
+                        >
+                            Daxil Olma Səhifəsinə Qayıt
+                        </Link>
                     </div>
-
-                    {/* Register Link */}
-                    <div className="text-center">
-                        <p className="text-gray-600">
-                            Hesabınız yoxdur?{' '}
-                            <Link 
-                                to="/register" 
-                                className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300"
-                            >
-                                Qeydiyyatdan Keçin
-                            </Link>
-                        </p>
-                    </div>
-                </div>
-
-                {/* Footer */}
-                <div className="text-center mt-8">
-                    <p className="text-sm text-gray-500">
-                        Daxil olmaqla{' '}
-                        <a href="#" className="text-indigo-600 hover:text-indigo-700 transition-colors">
-                            İstifadə Şərtləri
-                        </a>
-                        {' '}və{' '}
-                        <a href="#" className="text-indigo-600 hover:text-indigo-700 transition-colors">
-                            Məxfilik Siyasəti
-                        </a>
-                        ni qəbul edirsiniz
-                    </p>
                 </div>
             </div>
         </div>
     );
 };
 
-export default LoginPage;
+export default ResetPasswordPage;
