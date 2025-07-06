@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
 
   // Axios instance (withCredentials true və render.com URL üçün uyğun)
   const API = axios.create({
-    baseURL: 'https://gunay-travel.onrender.com/api', // Render URL
+    baseURL: 'https://travel-back-new.onrender.com/api', // Render URL
     withCredentials: true,
     headers: {
       Authorization: token ? `Bearer ${token}` : undefined,
