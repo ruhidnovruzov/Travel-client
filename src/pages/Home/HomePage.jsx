@@ -42,9 +42,9 @@ const HomePage = () => {
       try {
         // Bu API endpointlərinizi əlavə etdikdən sonra aktiv edin
         const [flightsRes, hotelsRes, carsRes] = await Promise.all([
-          fetch('https://travel-back-new.onrender.com/api/flights'),
-          fetch('https://travel-back-new.onrender.com/api/hotels'),
-          fetch('https://travel-back-new.onrender.com/api/cars')
+          fetch('http://localhost:5000/api/flights'),
+          fetch('http://localhost:5000/api/hotels'),
+          fetch('http://localhost:5000/api/cars')
         ]);
 
         const flightsData = await flightsRes.json();
