@@ -30,7 +30,7 @@ const HotelSearchPage = () => {
   useEffect(() => {
     const fetchCities = async () => {
       try {
-        const res = await axios.get('http://localhost:5000/api/hotels');
+        const res = await axios.get('https://travel-back-new.onrender.com/api/hotels');
         const cities = res.data.data.map(h => h.city).filter(Boolean);
         setCityOptions(Array.from(new Set(cities)));
       } catch (err) {
@@ -63,7 +63,7 @@ const HotelSearchPage = () => {
       try {
         const params = {};
         if (debouncedCity) params.city = debouncedCity;
-        const res = await axios.get('http://localhost:5000/api/hotels', { params });
+        const res = await axios.get('https://travel-back-new.onrender.com/api/hotels', { params });
         setHotels(res.data.data || []);
       } catch (err) {
         setError('Hotellər yüklənmədi.');
@@ -296,7 +296,7 @@ const HotelSearchPage = () => {
                           </span>
                         ))
                       ) : (
-                        <span className="text-xs text-gray-500">Xidmətlər http://localhost:5000/</span>
+                        <span className="text-xs text-gray-500">Xidmətlər https://travel-back-new.onrender.com/</span>
                       )}
                     </div>
                     <div className="flex justify-between items-center mt-4">

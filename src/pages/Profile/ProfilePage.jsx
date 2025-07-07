@@ -44,7 +44,7 @@ const ProfilePage = () => {
         try {
             const token = localStorage.getItem('token');
             const res = await axios.put(
-                'http://localhost:5000/api/users/profile',
+                'https://travel-back-new.onrender.com/api/users/profile',
                 {
                     name: form.name,
                     email: form.email,

@@ -19,7 +19,7 @@ const FlightSearchPage = () => {
     useEffect(() => {
         const fetchAllFlights = async () => {
             try {
-                const res = await fetch('http://localhost:5000/api/flights');
+                const res = await fetch('https://travel-back-new.onrender.com/api/flights');
                 const data = await res.json();
                 if (data.success) {
                     setAllFlights(data.data);
@@ -58,10 +58,10 @@ const FlightSearchPage = () => {
                 origin,
                 destination,
                 departureDate,
-                url: `http://localhost:5000/api/flights?${params.toString()}`
+                url: `https://travel-back-new.onrender.com/api/flights?${params.toString()}`
             });
 
-            const res = await fetch(`http://localhost:5000/api/flights?${params.toString()}`);
+            const res = await fetch(`https://travel-back-new.onrender.com/api/flights?${params.toString()}`);
             const data = await res.json();
 
             console.log('API Response:', data);
