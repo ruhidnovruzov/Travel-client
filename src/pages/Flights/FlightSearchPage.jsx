@@ -327,7 +327,9 @@ const FlightSearchPage = () => {
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
                                                     <div>
-                                                        <div className="font-semibold">{formatTime(flight.departureTime)}</div>
+                                                        <div className="font-semibold">
+                                                            {formatTime(flight.departureTime)} • {formatDate(flight.departureTime)}
+                                                        </div>
                                                         <div className="text-sm text-white/70">{flight.origin}</div>
                                                     </div>
                                                 </div>
@@ -346,7 +348,9 @@ const FlightSearchPage = () => {
                                                 <div className="flex items-center gap-3">
                                                     <div className="w-3 h-3 bg-green-400 rounded-full"></div>
                                                     <div>
-                                                        <div className="font-semibold">{formatTime(flight.arrivalTime)}</div>
+                                                        <div className="font-semibold">
+                                                            {formatTime(flight.arrivalTime)} • {formatDate(flight.arrivalTime)}
+                                                        </div>
                                                         <div className="text-sm text-white/70">{flight.destination}</div>
                                                     </div>
                                                 </div>
