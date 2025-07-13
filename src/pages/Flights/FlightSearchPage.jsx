@@ -108,14 +108,22 @@ const FlightSearchPage = () => {
         });
     };
 
-const formatDate = (dateString) => {
+    const formatDate = (dateString) => {
     const date = new Date(dateString);
+
+    const day = date.getDate();
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Ayı 2 rəqəmli edir
-    const day = date.getDate(); // Günü tək rəqəmli saxlayır
-    
-    return `${year} M${month} ${day}`;
-};   
+
+    const monthNames = [
+        'yanvar', 'fevral', 'mart', 'aprel', 'may', 'iyun',
+        'iyul', 'avqust', 'sentyabr', 'oktyabr', 'noyabr', 'dekabr'
+    ];
+    const month = monthNames[date.getMonth()];
+
+    return `${day} ${month} ${year}`;
+};
+
+ 
     const popularDestinations = [
         { city: 'İstanbul', country: 'Türkiyə', price: '₼120', icon: <MapPin className="h-8 w-8 text-blue-400" /> },
         { city: 'Dubai', country: 'BƏA', price: '₼280', icon: <Star className="h-8 w-8 text-yellow-400" /> },
